@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/charts-playground-2020/precache-manifest.ce1e90685a472fa91265a720f9c66a31.js"
+  "/charts-playground-2020/precache-manifest.e8881c5753f675c78d211bffd84bada4.js"
 );
 
 self.addEventListener('message', (event) => {
