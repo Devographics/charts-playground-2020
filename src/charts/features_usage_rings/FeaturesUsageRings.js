@@ -5,12 +5,10 @@ import { getNormalizedData } from './data'
 
 const data = getNormalizedData()
 
-const arc = d3Arc()
-    .cornerRadius(3)
-    .padAngle(.004)
+const arc = d3Arc().cornerRadius(3).padAngle(0.004)
 
-const radians = (degrees) => degrees * Math.PI / 180
-const degrees = (radians) => radians * 180 / Math.PI
+const radians = (degrees) => (degrees * Math.PI) / 180
+const degrees = (radians) => (radians * 180) / Math.PI
 
 const positionFromAngle = (angle, distance) => ({
     x: Math.cos(angle - Math.PI / 2) * distance,
@@ -21,12 +19,9 @@ const circleArc = (r, startAngle, endAngle) => {
     const start = positionFromAngle(endAngle, r)
     const end = positionFromAngle(startAngle, r)
 
-    const arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+    const arcSweep = endAngle - startAngle <= 180 ? '0' : '1'
 
-    const d = [
-        'M', start.x, start.y,
-        'A', r, r, 0, arcSweep, 0, end.x, end.y,
-    ].join(' ')
+    const d = ['M', start.x, start.y, 'A', r, r, 0, arcSweep, 0, end.x, end.y].join(' ')
 
     return d
 }
@@ -54,7 +49,7 @@ const colors = {
 
 export const FeaturesUsageRings = () => {
     let currentCategoryAngle = radians(angleGap / 2)
-    const categories = data.categories.map(category => {
+    const categories = data.categories.map((category) => {
         const categoryWithAngles = {
             ...category,
             startAngle: currentCategoryAngle,
@@ -80,16 +75,14 @@ export const FeaturesUsageRings = () => {
     years.reverse()
     years = years.map((year, index) => ({
         year,
-        index
+        index,
     }))
 
-    const nodeRadiusScale = scaleLinear()
-        .domain([0, 1])
-        .range([0, maxNodeRadius])
+    const nodeRadiusScale = scaleLinear().domain([0, 1]).range([0, maxNodeRadius])
 
     return (
         <svg width={1400} height={1000}>
-            <rect width={1400} height={1000} fill={colors.background}/>
+            <rect width={1400} height={1000} fill={colors.background} />
             <g transform={`translate(450, 450)`}>
                 {/*
                 {years.map(year => {
@@ -143,29 +136,28 @@ export const FeaturesUsageRings = () => {
                     )
                 })}
                 */}
-                {years.map(year => {
-                    const yearRadius = outerRadius - categoriesRingThickness - (year.index + 0.5) * yearRingThickness
+                {years.map((year) => {
+                    const yearRadius =
+                        outerRadius -
+                        categoriesRingThickness -
+                        (year.index + 0.5) * yearRingThickness
 
                     return (
                         <g key={year.year}>
                             <circle
                                 r={yearRadius}
                                 stroke="rgb(136, 75, 88)"
-                                opacity={.3}
+                                opacity={0.3}
                                 fill="none"
                             />
-                            <circle
-                                r={3}
-                                cy={-yearRadius}
-                                fill="rgb(136, 75, 88)"
-                            />
+                            <circle r={3} cy={-yearRadius} fill="rgb(136, 75, 88)" />
                             <text
                                 y={-yearRadius - 12}
                                 textAnchor="middle"
                                 fill="rgb(136, 75, 88)"
                                 style={{
                                     fontSize: 14,
-                                    fontWeight: 600
+                                    fontWeight: 600,
                                 }}
                             >
                                 {year.year}
@@ -174,22 +166,23 @@ export const FeaturesUsageRings = () => {
                     )
                 })}
                 <g>
-                    {categories.map(category => {
+                    {categories.map((category) => {
                         return (
                             <Fragment key={category.id}>
-                                {category.features.map(feature => {
+                                {category.features.map((feature) => {
                                     const pos0 = positionFromAngle(
                                         feature.angle,
                                         outerRadius - categoriesRingThickness
                                     )
-                                    const pos1 = positionFromAngle(
-                                        feature.angle,
-                                        240
-                                    )
+                                    const pos1 = positionFromAngle(feature.angle, 240)
 
                                     return (
                                         <Fragment key={feature.id}>
-                                            <g transform={`rotate(${degrees(feature.angle - Math.PI / 2)})`}>
+                                            <g
+                                                transform={`rotate(${degrees(
+                                                    feature.angle - Math.PI / 2
+                                                )})`}
+                                            >
                                                 <g transform={`translate(230, 0)`}>
                                                     <text
                                                         fill={colors[category.id]}
@@ -197,7 +190,7 @@ export const FeaturesUsageRings = () => {
                                                         dominantBaseline="middle"
                                                         style={{
                                                             fontSize: 10,
-                                                            fontWeight: 600
+                                                            fontWeight: 600,
                                                         }}
                                                     >
                                                         {feature.id}
@@ -221,26 +214,32 @@ export const FeaturesUsageRings = () => {
                     })}
                 </g>
                 <g>
-                    {categories.map(category => {
+                    {categories.map((category) => {
                         return (
                             <Fragment key={category.id}>
-                                {category.features.map(feature => {
+                                {category.features.map((feature) => {
                                     return (
                                         <Fragment key={feature.id}>
-                                            {years.map(year => {
+                                            {years.map((year) => {
                                                 const yearData = feature.years[year.year]
 
                                                 if (yearData === undefined) {
                                                     return null
                                                 }
 
-                                                const distance = outerRadius
-                                                    - categoriesRingThickness
-                                                    - (year.index + 1) * yearRingThickness
-                                                    + yearRingThickness * .5
-                                                const pos = positionFromAngle(feature.angle, distance)
+                                                const distance =
+                                                    outerRadius -
+                                                    categoriesRingThickness -
+                                                    (year.index + 1) * yearRingThickness +
+                                                    yearRingThickness * 0.5
+                                                const pos = positionFromAngle(
+                                                    feature.angle,
+                                                    distance
+                                                )
 
-                                                const radius = nodeRadiusScale(yearData.awarenessRatio)
+                                                const radius = nodeRadiusScale(
+                                                    yearData.awarenessRatio
+                                                )
 
                                                 return (
                                                     <Fragment key={year.year}>
@@ -249,7 +248,7 @@ export const FeaturesUsageRings = () => {
                                                             cy={pos.y}
                                                             r={radius}
                                                             fill={colors[category.id]}
-                                                            fillOpacity={.4}
+                                                            fillOpacity={0.4}
                                                         />
                                                         <circle
                                                             cx={pos.x}
@@ -267,7 +266,7 @@ export const FeaturesUsageRings = () => {
                         )
                     })}
                 </g>
-                {categories.map(category => {
+                {categories.map((category) => {
                     return (
                         <g key={category.id} id={category.id}>
                             <path
@@ -282,12 +281,16 @@ export const FeaturesUsageRings = () => {
                             <defs>
                                 <path
                                     id={`category_${category.id}_path`}
-                                    d={circleArc(outerRadius - categoriesRingThickness * .5, category.startAngle, category.endAngle)}
+                                    d={circleArc(
+                                        outerRadius - categoriesRingThickness * 0.5,
+                                        category.startAngle,
+                                        category.endAngle
+                                    )}
                                 />
                             </defs>
                             <text
                                 style={{
-                                    fontWeight: 600
+                                    fontWeight: 600,
                                 }}
                                 fill="#ffffff"
                                 textAnchor="middle"

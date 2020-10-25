@@ -1,20 +1,8 @@
 import React, { useState, Fragment } from 'react'
 import { random } from 'lodash'
-import {
-    polygonCentroid,
-    polygonHull,
-} from 'd3-polygon'
-import {
-    forceSimulation,
-    forceLink,
-    forceCenter,
-    forceManyBody,
-    forceCollide,
-} from 'd3-force'
-import {
-    packEnclose,
-    packSiblings
-} from 'd3-hierarchy'
+import { polygonCentroid, polygonHull } from 'd3-polygon'
+import { forceSimulation, forceLink, forceCenter, forceManyBody, forceCollide } from 'd3-force'
+import { packEnclose, packSiblings } from 'd3-hierarchy'
 
 const featuresByCategory = {
     layout: [
@@ -56,17 +44,8 @@ const featuresByCategory = {
         'line_clamp',
         'direction',
     ],
-    animations_transforms: [
-        'transitions',
-        'transforms',
-        'animations',
-        'perspective',
-    ],
-    media_queries: [
-        'prefers_reduced_motion',
-        'prefers_color_scheme',
-        'color_gamut',
-    ],
+    animations_transforms: ['transitions', 'transforms', 'animations', 'perspective'],
+    media_queries: ['prefers_reduced_motion', 'prefers_color_scheme', 'color_gamut'],
     other_features: [
         'variables',
         'feature_support_queries',
@@ -75,7 +54,7 @@ const featuresByCategory = {
         'calc',
         'houdini',
         'comparison_functions',
-    ]
+    ],
 }
 
 const colors = {
@@ -108,13 +87,13 @@ const computeCategory = (categoryId) => {
     const connect = (source, target) => {
         const linkId = generateLinkId(source, target)
 
-        const existingLink = links.find(link => link.id === linkId)
+        const existingLink = links.find((link) => link.id === linkId)
         if (existingLink) return
 
         links.push({
             id: linkId,
             source,
-            target
+            target,
         })
     }
 
@@ -132,7 +111,7 @@ const computeCategory = (categoryId) => {
             connect(previousFeature, featureId)
         }
 
-        if (Math.random() < .5) {
+        if (Math.random() < 0.5) {
             const randomSibling = featureIds[random(0, featureIds.length - 1)]
             if (randomSibling !== featureId) {
                 connect(featureId, randomSibling)
@@ -151,18 +130,14 @@ const computeCategory = (categoryId) => {
     })
 
     const linkForce = forceLink()
-        .id(d => d.id)
+        .id((d) => d.id)
         .distance(() => {
             return 60 + Math.random() * 80
         })
 
-    const chargeForce = forceManyBody()
-        .strength(-160)
-        .distanceMin(1)
-        .distanceMax(200)
+    const chargeForce = forceManyBody().strength(-160).distanceMin(1).distanceMax(200)
 
-    const collisionForce = forceCollide(5)
-        .strength(100)
+    const collisionForce = forceCollide(5).strength(100)
 
     const centerForce = forceCenter(0, 0)
 
@@ -175,13 +150,15 @@ const computeCategory = (categoryId) => {
 
     simulation.tick(200)
 
-    const circle = packEnclose(nodes.map(node => ({
-        x: node.x,
-        y: node.y,
-        r: node.radius
-    })))
+    const circle = packEnclose(
+        nodes.map((node) => ({
+            x: node.x,
+            y: node.y,
+            r: node.radius,
+        }))
+    )
 
-    const pointsArray = nodes.map(node => [node.x, node.y])
+    const pointsArray = nodes.map((node) => [node.x, node.y])
     const hull = polygonHull(pointsArray)
     const centroid = polygonCentroid(hull)
 
@@ -198,7 +175,7 @@ const computeCategories = () => {
     const allLinks = []
     const categoriesNodes = []
 
-    Object.keys(featuresByCategory).forEach(categoryId => {
+    Object.keys(featuresByCategory).forEach((categoryId) => {
         const categoryLayout = computeCategory(categoryId)
         categoriesNodes.push({
             id: categoryId,
@@ -211,20 +188,20 @@ const computeCategories = () => {
             children: categoryLayout,
             centroid: {
                 x: categoryLayout.centroid[0],
-                y: categoryLayout.centroid[1]
-            }
+                y: categoryLayout.centroid[1],
+            },
         })
     })
 
     packSiblings(categoriesNodes)
 
-    categoriesNodes.forEach(categoriesNode => {
+    categoriesNodes.forEach((categoriesNode) => {
         const deltaX = categoriesNode.x - categoriesNode.ox
         const deltaY = categoriesNode.y - categoriesNode.oy
 
         allNodes.push(categoriesNode)
 
-        categoriesNode.children.nodes.forEach(node => {
+        categoriesNode.children.nodes.forEach((node) => {
             node.x += deltaX
             node.y += deltaY
 
@@ -234,21 +211,23 @@ const computeCategories = () => {
         categoriesNode.centroid.x += deltaX
         categoriesNode.centroid.y += deltaY
 
-        categoriesNode.children.links.forEach(link => {
+        categoriesNode.children.links.forEach((link) => {
             allLinks.push(link)
         })
     })
 
-    const circle = packEnclose(categoriesNodes.map(node => ({
-        x: node.x,
-        y: node.y,
-        r: node.r
-    })))
+    const circle = packEnclose(
+        categoriesNodes.map((node) => ({
+            x: node.x,
+            y: node.y,
+            r: node.r,
+        }))
+    )
 
     // adjust positions and sizes to get a constant chart size
     const sizeRatio = RADIUS / circle.r
     circle.r = circle.r * sizeRatio
-    allNodes.forEach(node => {
+    allNodes.forEach((node) => {
         node.x *= sizeRatio
         node.y *= sizeRatio
 
@@ -271,11 +250,15 @@ const Chart = () => {
     const { nodes, links, categories } = computeCategories()
 
     return (
-        <svg width={900} height={900} style={{
-            background: colors.background
-        }}>
+        <svg
+            width={900}
+            height={900}
+            style={{
+                background: colors.background,
+            }}
+        >
             <g transform={`translate(450, 450)`}>
-                {categories.map(category => (
+                {categories.map((category) => (
                     <circle
                         key={category.id}
                         cx={category.centroid.x}
@@ -285,7 +268,7 @@ const Chart = () => {
                         fill="#ff0000"
                     />
                 ))}
-                {Array.from({ length: 6 }, (_, i) => i).map(index => (
+                {Array.from({ length: 6 }, (_, i) => i).map((index) => (
                     <line
                         transform={`rotate(${index * 30})`}
                         key={index}
@@ -296,7 +279,7 @@ const Chart = () => {
                         stroke={colors.diagram}
                     />
                 ))}
-                {Array.from({ length: 3 }, (_, i) => i).map(index => (
+                {Array.from({ length: 3 }, (_, i) => i).map((index) => (
                     <circle
                         key={index}
                         r={RADIUS - index * 100}
@@ -305,11 +288,7 @@ const Chart = () => {
                         stroke={colors.diagram}
                     />
                 ))}
-                <circle
-                    r={RADIUS}
-                    fill="none"
-                    stroke={colors.diagram}
-                />
+                <circle r={RADIUS} fill="none" stroke={colors.diagram} />
                 <circle
                     r={RADIUS + 4}
                     fill="none"
@@ -317,12 +296,8 @@ const Chart = () => {
                     strokeWidth={8}
                     strokeDasharray={`14 14`}
                 />
-                <circle
-                    r={RADIUS + 8}
-                    fill="none"
-                    stroke={colors.diagram}
-                />
-                {links.map(link => {
+                <circle r={RADIUS + 8} fill="none" stroke={colors.diagram} />
+                {links.map((link) => {
                     return (
                         <g key={link.id}>
                             <line
@@ -333,7 +308,7 @@ const Chart = () => {
                                 x2={link.target.x}
                                 y1={link.source.y}
                                 y2={link.target.y}
-                                opacity={.1}
+                                opacity={0.1}
                             />
                             <line
                                 stroke={colors[link.source.categoryId]}
@@ -349,7 +324,7 @@ const Chart = () => {
                         </g>
                     )
                 })}
-                {nodes.map(node => {
+                {nodes.map((node) => {
                     if (node.type === 'category') {
                         return (
                             <g key={node.id}>
@@ -382,9 +357,9 @@ const Chart = () => {
                         </g>
                     )
                 })}
-                {categories.map(category => (
+                {categories.map((category) => (
                     <Fragment key={category.id}>
-                        {category.children.nodes.map(node => {
+                        {category.children.nodes.map((node) => {
                             let textAnchor = 'start'
                             let xOffset = node.radius + 10
                             if (node.x < category.centroid.x) {
@@ -404,7 +379,7 @@ const Chart = () => {
                                         strokeLinejoin="round"
                                         style={{
                                             fontSize: 10,
-                                            fontWeight: 400
+                                            fontWeight: 400,
                                         }}
                                     >
                                         {node.id}
@@ -417,7 +392,7 @@ const Chart = () => {
                                         dominantBaseline="central"
                                         style={{
                                             fontSize: 10,
-                                            fontWeight: 400
+                                            fontWeight: 400,
                                         }}
                                     >
                                         {node.id}
@@ -427,7 +402,7 @@ const Chart = () => {
                         })}
                     </Fragment>
                 ))}
-                {categories.map(category => (
+                {categories.map((category) => (
                     <g
                         key={category.id}
                         transform={`translate(${category.x}, ${category.y - category.radius - 20})`}
@@ -440,8 +415,8 @@ const Chart = () => {
                             textAnchor="middle"
                             style={{
                                 fontWeight: 600,
-                                fontSize: 16
-                             }}
+                                fontSize: 16,
+                            }}
                         >
                             {category.id}
                         </text>
@@ -450,7 +425,7 @@ const Chart = () => {
                             textAnchor="middle"
                             style={{
                                 fontWeight: 600,
-                                fontSize: 16
+                                fontSize: 16,
                             }}
                         >
                             {category.id}
@@ -468,11 +443,15 @@ export const Constellation = () => {
     return (
         <div>
             <div>
-                <button onClick={() => {
-                    setToken(previous => previous + 1)
-                }}>generate</button>
+                <button
+                    onClick={() => {
+                        setToken((previous) => previous + 1)
+                    }}
+                >
+                    generate
+                </button>
             </div>
-            <Chart key={token}/>
+            <Chart key={token} />
         </div>
     )
 }

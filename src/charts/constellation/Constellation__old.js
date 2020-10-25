@@ -1,12 +1,6 @@
-import React, {useState, Fragment} from 'react'
+import React, { useState, Fragment } from 'react'
 import { polygonCentroid } from 'd3-polygon'
-import {
-    forceSimulation,
-    forceLink,
-    forceCenter,
-    forceManyBody,
-    forceCollide,
-} from 'd3-force'
+import { forceSimulation, forceLink, forceCenter, forceManyBody, forceCollide } from 'd3-force'
 import { packEnclose } from 'd3-hierarchy'
 
 const featuresByCategory = {
@@ -49,17 +43,8 @@ const featuresByCategory = {
         'line_clamp',
         'direction',
     ],
-    animations_transforms: [
-        'transitions',
-        'transforms',
-        'animations',
-        'perspective',
-    ],
-    media_queries: [
-        'prefers_reduced_motion',
-        'prefers_color_scheme',
-        'color_gamut',
-    ],
+    animations_transforms: ['transitions', 'transforms', 'animations', 'perspective'],
+    media_queries: ['prefers_reduced_motion', 'prefers_color_scheme', 'color_gamut'],
     other_features: [
         'variables',
         'feature_support_queries',
@@ -68,7 +53,7 @@ const featuresByCategory = {
         'calc',
         'houdini',
         'comparison_functions',
-    ]
+    ],
 }
 
 const colors = {
@@ -106,7 +91,7 @@ const Chart = () => {
     const connect = (source, target) => {
         const linkId = generateLinkId(source, target)
 
-        const existingLink = links.find(link => link.id === linkId)
+        const existingLink = links.find((link) => link.id === linkId)
         if (existingLink) {
             return
         }
@@ -114,7 +99,7 @@ const Chart = () => {
         links.push({
             id: linkId,
             source,
-            target
+            target,
         })
     }
 
@@ -152,8 +137,8 @@ const Chart = () => {
             }
             */
 
-            if (Math.random() < .2) {
-                featureIds.forEach(target => {
+            if (Math.random() < 0.2) {
+                featureIds.forEach((target) => {
                     if (target !== featureId) {
                         connect(featureId, target)
                     }
@@ -163,18 +148,14 @@ const Chart = () => {
     })
 
     const linkForce = forceLink()
-        .id(d => d.id)
+        .id((d) => d.id)
         .distance(() => {
             return 30 + Math.random() * 100
         })
 
-    const chargeForce = forceManyBody()
-        .strength(-140)
-        .distanceMin(1)
-        .distanceMax(200)
+    const chargeForce = forceManyBody().strength(-140).distanceMin(1).distanceMax(200)
 
-    const collisionForce = forceCollide(5)
-        .strength(100)
+    const collisionForce = forceCollide(5).strength(100)
 
     const centerForce = forceCenter(450, 450)
 
@@ -187,24 +168,24 @@ const Chart = () => {
 
     simulation.tick(200)
 
-    const circle = packEnclose(nodes.map(node => ({
-        x: node.x,
-        y: node.y,
-        r: node.radius
-    })))
+    const circle = packEnclose(
+        nodes.map((node) => ({
+            x: node.x,
+            y: node.y,
+            r: node.radius,
+        }))
+    )
 
     return (
-        <svg width={900} height={900} style={{
-            background: colors.background
-        }}>
-            <circle
-                cx={circle.x}
-                cy={circle.y}
-                r={circle.r + 12}
-                fill="none"
-                stroke="#884b58"
-            />
-            {links.map(link => {
+        <svg
+            width={900}
+            height={900}
+            style={{
+                background: colors.background,
+            }}
+        >
+            <circle cx={circle.x} cy={circle.y} r={circle.r + 12} fill="none" stroke="#884b58" />
+            {links.map((link) => {
                 if (link.source.type === 'root') {
                     return null
                 }
@@ -222,12 +203,12 @@ const Chart = () => {
                             x2={link.target.x}
                             y1={link.source.y}
                             y2={link.target.y}
-                            opacity={.3}
+                            opacity={0.3}
                         />
                     </g>
                 )
             })}
-            {nodes.map(node => {
+            {nodes.map((node) => {
                 if (node.type === 'root') {
                     return null
                 }
@@ -247,7 +228,7 @@ const Chart = () => {
                     </g>
                 )
             })}
-            {nodes.map(node => {
+            {nodes.map((node) => {
                 if (node.type === 'category') {
                     return (
                         <Fragment key={node.id}>
@@ -261,7 +242,7 @@ const Chart = () => {
                                 textAnchor="middle"
                                 style={{
                                     fontWeight: 600,
-                                    fontSize: 16
+                                    fontSize: 16,
                                 }}
                             >
                                 {node.id}
@@ -273,7 +254,7 @@ const Chart = () => {
                                 textAnchor="middle"
                                 style={{
                                     fontWeight: 600,
-                                    fontSize: 16
+                                    fontSize: 16,
                                 }}
                             >
                                 {node.id}
@@ -294,11 +275,15 @@ export const Constellation = () => {
     return (
         <div>
             <div>
-                <button onClick={() => {
-                    setToken(previous => previous + 1)
-                }}>generate</button>
+                <button
+                    onClick={() => {
+                        setToken((previous) => previous + 1)
+                    }}
+                >
+                    generate
+                </button>
             </div>
-            <Chart key={token}/>
+            <Chart key={token} />
         </div>
     )
 }
