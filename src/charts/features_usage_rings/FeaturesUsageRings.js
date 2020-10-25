@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { arc as d3Arc } from 'd3-shape'
 import { scaleLinear } from 'd3-scale'
-import { getNormalizedData } from '../data'
+import { getNormalizedData } from './data'
 
 const data = getNormalizedData()
 
