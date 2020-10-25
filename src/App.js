@@ -5,7 +5,7 @@ import { Constellation } from './charts/constellation/Constellation'
 
 const App = () => {
     return (
-        <Router>
+        <Router hashType="noslash">
             <div>
                 <nav>
                     <ul>
