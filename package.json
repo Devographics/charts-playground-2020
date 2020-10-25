@@ -25,7 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "fmt": "prettier --write \"src/**/*.{js,yaml,yml,json}\""
+    "fmt": "prettier --write \"src/**/*.{js,yaml,yml,json}\"",
+    "deploy": "gh-pages -d build -r git@github.com:StateOfJS/charts-playground-2020.git -b gh-pages"
   },
   "eslintConfig": {
     "extends": "react-app"
